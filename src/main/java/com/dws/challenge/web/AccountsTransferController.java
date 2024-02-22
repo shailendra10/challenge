@@ -62,9 +62,9 @@ public class AccountsTransferController {
       }
 
       synchronized (transferService) {
-            message = this.transferService.transferAmount(accountFrom, accountTo, amount);
-            sendMailNotification(accountFrom, accountTo, amount);
-          }
+        message = this.transferService.transferAmount(accountFrom, accountTo, amount);
+        sendMailNotification(accountFrom, accountTo, amount);
+      }
       //}
 
 
