@@ -39,7 +39,7 @@ public class AccountsTransferController {
     log.info("Transfer Amount  {}", transfer);
     String message = "";
     try {
-      synchronized (this) {
+      //synchronized (this) {
       Account accountFrom = accountsService.getAccount(transfer.getAccountFrom());
       Account accountTo = accountsService.getAccount(transfer.getAccountTo());
       BigDecimal amount = transfer.getAmount();
@@ -60,11 +60,12 @@ public class AccountsTransferController {
       if(amount.doubleValue() <= 0.0) {
         throw new InvalidAmountValueException("amount should be more than 0.0");
       }
-          synchronized (transferService) {
+
+      synchronized (transferService) {
             message = this.transferService.transferAmount(accountFrom, accountTo, amount);
             sendMailNotification(accountFrom, accountTo, amount);
           }
-      }
+      //}
 
 
     } catch (Exception exception) {
