@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.dws.challenge.ChallengeApplicationTests" tests="1" skipped="0" failures="0" errors="0" timestamp="2024-02-22T12:53:40" hostname="shailendras-MacBook-Pro.local" time="0.003">
-  <properties/>
-  <testcase name="contextLoads()" classname="com.dws.challenge.ChallengeApplicationTests" time="0.003"/>
-  <system-out><![CDATA[2024-02-22T18:23:40.460+05:30  INFO 11235 --- [    Test worker] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.dws.challenge.ChallengeApplicationTests]: ChallengeApplicationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
-2024-02-22T18:23:40.462+05:30  INFO 11235 --- [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.dws.challenge.ChallengeApplication for test class com.dws.challenge.ChallengeApplicationTests
-]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>

@@ -4,10 +4,13 @@ package com.dws.challenge;
 import com.dws.challenge.domain.Account;
 import com.dws.challenge.domain.Transfer;
 import com.dws.challenge.service.AccountsService;
+import com.dws.challenge.service.NotificationService;
+import com.dws.challenge.service.TransferService;
 import com.dws.challenge.web.AccountsTransferController;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.TestInstance;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -18,6 +21,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -28,6 +33,11 @@ public class ConcurrentTransferTest {
 
     @Autowired
     AccountsService accountsService;
+
+    @Autowired
+    TransferService transferService;
+    @Mock
+    NotificationService notificationService;
 
     private static final int NUM_THREADS = 20;
     private static final int NUM_REPEATS = 20; // Number of repeated tests per thread
@@ -45,6 +55,8 @@ public class ConcurrentTransferTest {
         accountsService.createAccount(account1);
         accountsService.createAccount(account2);
         transfer = new Transfer("Account123", "Account124", new BigDecimal(1000.0));
+
+        accountsTransferController = new AccountsTransferController(transferService, notificationService, accountsService);
     }
 
     @RepeatedTest(NUM_THREADS)
@@ -54,6 +66,8 @@ public class ConcurrentTransferTest {
 
         // Setup an ExecutorService with the desired number of threads
         ExecutorService executor = Executors.newFixedThreadPool(NUM_THREADS);
+
+        doNothing().when(notificationService).notifyAboutTransfer(any(), any());
 
         // Execute the transferAmount method in multiple threads
         for (int i = 0; i < NUM_REPEATS; i++) {
