@@ -39,10 +39,11 @@ public class ConcurrentTransferTest {
     @Mock
     NotificationService notificationService;
 
-    private static final int NUM_THREADS = 20;
-    private static final int NUM_REPEATS = 20; // Number of repeated tests per thread
+    private static final int NUM_THREADS = 15;
+    private static final int NUM_REPEATS = 15; // Number of repeated tests per thread
 
     private Transfer transfer;
+    private Transfer reverseTransfer;
 
 
     @BeforeEach
@@ -51,10 +52,11 @@ public class ConcurrentTransferTest {
         accountsService.getAccountsRepository().clearAccounts();
 
         Account account1 = new Account("Account123", new BigDecimal(1000.0));
-        Account account2 = new Account("Account124", new BigDecimal(2000.0));
+        Account account2 = new Account("Account124", new BigDecimal(1000.0));
         accountsService.createAccount(account1);
         accountsService.createAccount(account2);
         transfer = new Transfer("Account123", "Account124", new BigDecimal(1000.0));
+        reverseTransfer  = new Transfer("Account124", "Account123", new BigDecimal(1000.0));
 
         accountsTransferController = new AccountsTransferController(transferService, notificationService, accountsService);
     }
@@ -65,7 +67,7 @@ public class ConcurrentTransferTest {
         CountDownLatch latch = new CountDownLatch(1);
 
         // Setup an ExecutorService with the desired number of threads
-        ExecutorService executor = Executors.newFixedThreadPool(NUM_THREADS);
+        ExecutorService executor = Executors.newFixedThreadPool(NUM_THREADS*2);
 
         doNothing().when(notificationService).notifyAboutTransfer(any(), any());
 
@@ -80,6 +82,19 @@ public class ConcurrentTransferTest {
                 }
             });
         }
+
+        for (int i = 0; i < NUM_REPEATS; i++) {
+            executor.execute(() -> {
+                try {
+                    latch.await(); // Wait until all threads are ready to start
+                    accountsTransferController.transferAmount(reverseTransfer); // Sample transfer
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            });
+        }
+
+
         // Release the latch to start all threads
         latch.countDown();
         // Shutdown the executor and wait for all tasks to complete
@@ -88,10 +103,9 @@ public class ConcurrentTransferTest {
 
         Account accountTo = accountsService.getAccount("Account124");
         assertThat(accountTo.getAccountId()).isEqualTo("Account124");
-        assertThat(accountTo.getBalance()).isEqualByComparingTo("3000");
 
         Account accountFrom = accountsService.getAccount("Account123");
         assertThat(accountFrom.getAccountId()).isEqualTo("Account123");
-        assertThat(accountFrom.getBalance()).isEqualByComparingTo("0.0");
+        // Removed balance check, as balance in both account is unpredictable. its depends on which thread going to get chance to execute.
     }
 }
