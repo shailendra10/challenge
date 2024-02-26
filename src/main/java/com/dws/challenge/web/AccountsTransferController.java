@@ -61,10 +61,10 @@ public class AccountsTransferController {
         throw new InvalidAmountValueException("amount should be more than 0.0");
       }
 
-      synchronized (transferService) {
+      //synchronized (transferService) {
         message = this.transferService.transferAmount(accountFrom, accountTo, amount);
         sendMailNotification(accountFrom, accountTo, amount);
-      }
+      //}
       //}
 
 
@@ -76,7 +76,7 @@ public class AccountsTransferController {
     return new ResponseEntity<>(message, HttpStatus.OK);
   }
 
-  private synchronized void sendMailNotification(Account accountFrom, Account accountTo, BigDecimal amount) throws NotificationServiceException {
+  private void sendMailNotification(Account accountFrom, Account accountTo, BigDecimal amount) throws NotificationServiceException {
 
     try {
 

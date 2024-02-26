@@ -10,10 +10,20 @@ import java.math.BigDecimal;
 @Service
 @Slf4j
 public class TransferService {
-  public synchronized String transferAmount(Account accountFrom, Account accountTo, BigDecimal amount) throws InsufficientBalanceException {
+  public String transferAmount(Account accountFrom, Account accountTo, BigDecimal amount) throws InsufficientBalanceException {
 
-    synchronized (accountFrom) {
-      synchronized (accountTo) {
+    Account firstAccount;
+    Account secondAccount;
+    if (accountFrom.getAccountId().compareTo(accountTo.getAccountId()) < 0) {
+      firstAccount = accountFrom;
+      secondAccount = accountTo;
+    } else {
+      firstAccount = accountTo;
+      secondAccount = accountFrom;
+    }
+
+    synchronized (firstAccount) {
+      synchronized (secondAccount) {
         int compareBalance = accountFrom.getBalance().compareTo(amount);
         log.info("compareBalance {} ", compareBalance);
 

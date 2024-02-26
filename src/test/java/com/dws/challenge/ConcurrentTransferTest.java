@@ -28,7 +28,6 @@ import static org.mockito.Mockito.doNothing;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class ConcurrentTransferTest {
 
-    @Autowired
     AccountsTransferController accountsTransferController;
 
     @Autowired
@@ -39,8 +38,8 @@ public class ConcurrentTransferTest {
     @Mock
     NotificationService notificationService;
 
-    private static final int NUM_THREADS = 15;
-    private static final int NUM_REPEATS = 15; // Number of repeated tests per thread
+    private static final int NUM_THREADS = 50;
+    private static final int NUM_REPEATS = 50; // Number of repeated tests per thread
 
     private Transfer transfer;
     private Transfer reverseTransfer;
@@ -106,6 +105,7 @@ public class ConcurrentTransferTest {
 
         Account accountFrom = accountsService.getAccount("Account123");
         assertThat(accountFrom.getAccountId()).isEqualTo("Account123");
+
         // Removed balance check, as balance in both account is unpredictable. its depends on which thread going to get chance to execute.
     }
 }
